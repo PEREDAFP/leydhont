@@ -48,9 +48,16 @@ class TestValidaciones(unittest.TestCase):
         with self.assertRaises(ValueError):
             validar_datos(5, 100000, 0, [("A", -100)])
 
-    def test_suma_excede_total(self):
+    def test_suma_partidos_excede_total(self):
         with self.assertRaises(ValueError):
             validar_datos(5, 100000, 0, [("A", 60000), ("B", 50000)])
+
+    def test_suma_partidos_igual_a_total_pasa_con_blanco(self):
+        # Partidos suman exactamente el total; el blanco no resta capacidad.
+        validar_datos(5, 1200, 50, [("Partido 1", 1200), ("Partido 2", 0)])
+
+    def test_suma_partidos_menor_a_total_pasa(self):
+        validar_datos(5, 100000, 2000, [("A", 42000), ("B", 31000), ("C", 22500)])
 
 
 if __name__ == "__main__":

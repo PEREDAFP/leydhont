@@ -14,8 +14,10 @@ def validar_datos(
     """Valida las entradas según las reglas del README.
 
     - No se admiten valores negativos ni escaños igual a cero.
-    - La suma de votos de los partidos más los votos en blanco no debe
-      superar el total de votos emitidos.
+    - La suma de votos de los partidos no debe superar el total de
+      votos emitidos (los votos en blanco se tienen en cuenta para el
+      cálculo del umbral del 3 %, pero no restan capacidad a los
+      partidos en esta validación).
     """
     if escaños <= 0:
         raise ValueError("El número de escaños debe ser mayor que cero.")
@@ -26,10 +28,9 @@ def validar_datos(
     for nombre, votos in partidos:
         if votos < 0:
             raise ValueError(f"Los votos del partido {nombre} no pueden ser negativos.")
-    if sum(votos for _, votos in partidos) + votos_blanco > votos_totales:
+    if sum(votos for _, votos in partidos) > votos_totales:
         raise ValueError(
-            "La suma de votos de los partidos más los votos en blanco "
-            "no debe superar el total de votos emitidos."
+            "La suma de votos de los partidos no debe superar el total de votos emitidos."
         )
 
 

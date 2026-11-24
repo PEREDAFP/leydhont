@@ -3,14 +3,27 @@
 Captura los datos por consola y muestra el reparto de escaños.
 """
 
+import os
+import sys
+
 from dhondt import calcular_umbral, filtrar_partidos, calcular_dhondt, validar_datos
+
+
+def limpiar_pantalla() -> None:
+    """Limpia la pantalla del terminal de forma multiplataforma (stdlib)."""
+    os.system("cls" if os.name == "nt" else "clear")
+
+# Verde brillante para las preguntas, solo si la salida es una terminal
+# (evita códigos de escape basura cuando se redirige a archivo o pipe).
+_COLOR_PROMPT = "\033[92m" if sys.stdout.isatty() else ""
+_COLOR_RESET = "\033[0m" if sys.stdout.isatty() else ""
 
 
 def leer_entero(mensaje: str, permitir_cero: bool = True) -> int:
     """Lee un entero no negativo por consola, volviendo a pedirlo si es inválido."""
     while True:
         try:
-            valor = int(input(mensaje))
+            valor = int(input(f"{_COLOR_PROMPT}{mensaje}{_COLOR_RESET}"))
         except ValueError:
             print("Ingrese un número entero válido.")
             continue
@@ -21,6 +34,7 @@ def leer_entero(mensaje: str, permitir_cero: bool = True) -> int:
 
 
 def main() -> None:
+    limpiar_pantalla()
     while True:
         try:
             print("--- Datos de la Circunscripción ---")
@@ -31,7 +45,11 @@ def main() -> None:
 
             partidos = []
             for i in range(1, num_partidos + 1):
-                nombre = input(f"Nombre del partido {i}: ").strip() or f"Partido {i}"
+                nombre = (
+                    input(f"{_COLOR_PROMPT}Nombre del partido {i}: {_COLOR_RESET}")
+                    .strip()
+                    or f"Partido {i}"
+                )
                 votos = leer_entero(f"Votos de {nombre}: ")
                 partidos.append((nombre, votos))
 
