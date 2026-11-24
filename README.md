@@ -30,6 +30,7 @@ Al ejecutar el programa, se solicitarán al usuario los siguientes datos de la c
   1. Con las candidaturas que igualen o superen el 3%, se dividen los votos obtenidos por cada partido entre $1, 2, 3, \dots, N$ (siendo $N$ el número de escaños a repartir).
   2. Se ordenan todos los cocientes resultantes de mayor a menor.
   3. Se asignan los $N$ escaños a los partidos propietarios de los $N$ cocientes más altos.
+  4. **Desempate**: si dos cocientes son iguales, el escaño se asigna al partido con **más votos**, independientemente del orden de introducción. Solo si también empatan los votos se respeta el orden en que se introdujeron los partidos.
 - **Validaciones básicas**:
   - No se admiten valores negativos ni un número de escaños igual a cero.
   - La suma de los votos de los partidos más los votos en blanco no debe superar el total de votos emitidos.

@@ -32,6 +32,24 @@ class TestDhondt(unittest.TestCase):
             resultado, {"Partido A": 2, "Partido B": 2, "Partido C": 1}
         )
 
+    def test_empate_gana_partido_con_mas_votos(self):
+        # Partido B (introducido segundo) tiene más votos y gana el desempate.
+        # Cocientes: A/1=3000, B/1=6000, A/2=1500, B/2=3000.
+        # Top 2: B/1=6000 y el empate a 3000 entre A/1 y B/2 -> gana B.
+        escaños = 2
+        partidos = [("A", 3000), ("B", 6000)]
+        resultado = calcular_dhondt(escaños, partidos)
+        self.assertEqual(resultado, {"A": 0, "B": 2})
+
+    def test_empate_total_respeta_orden_introduccion(self):
+        # Misma votación: ante empate total se respeta orden de introducción.
+        # Cocientes: A/1=3000, A/2=1500, B/1=3000, B/2=1500.
+        # Top 2: empate a 3000 entre A/1 y B/1 -> gana A (introducido primero).
+        escaños = 2
+        partidos = [("A", 3000), ("B", 3000)]
+        resultado = calcular_dhondt(escaños, partidos)
+        self.assertEqual(resultado, {"A": 1, "B": 1})
+
     def test_suma_escaños_igual_a_n(self):
         escaños = 7
         partidos = [("A", 10000), ("B", 8000), ("C", 5000)]

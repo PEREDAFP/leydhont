@@ -50,18 +50,21 @@ def calcular_dhondt(escaños: int, partidos: List[Partido]) -> Dict[str, int]:
     1. Divide los votos de cada partido entre 1, 2, ..., N (N = escaños).
     2. Ordena todos los cocientes de mayor a menor.
     3. Asigna los N escaños a los N cocientes más altos.
+
+    Desempate: ante cocientes iguales, gana el partido con más votos.
+    Si también hay empate de votos, se respeta el orden de introducción.
     """
     cocientes = []
     for nombre, votos in partidos:
         for divisor in range(1, escaños + 1):
-            cocientes.append((votos / divisor, nombre))
+            cocientes.append((votos / divisor, votos, nombre))
 
-    # Orden estable por cociente descendente; los empates conservan
-    # el orden de aparición (orden de lista de partidos).
-    cocientes.sort(key=lambda c: -c[0])
+    # Orden estable por (cociente, votos) descendente.
+    # Los empates totales conservan el orden de introducción.
+    cocientes.sort(key=lambda c: (c[0], c[1]), reverse=True)
 
     resultado = {nombre: 0 for nombre, _ in partidos}
-    for _, nombre in cocientes[:escaños]:
+    for _, _, nombre in cocientes[:escaños]:
         resultado[nombre] += 1
     return resultado
 
@@ -78,16 +81,17 @@ def calcular_tabla_divisiones(escaños: int, partidos: List[Partido]):
     todos = []
     for nombre, votos in partidos:
         for divisor in range(1, escaños + 1):
-            todos.append((votos / divisor, nombre, divisor))
+            todos.append((votos / divisor, votos, nombre, divisor))
 
-    # Orden estable descendente por cociente (empates conservan orden de inserción)
-    todos.sort(key=lambda c: -c[0])
+    # Orden estable descendente por (cociente, votos).
+    # Empates totales conservan orden de inserción.
+    todos.sort(key=lambda c: (c[0], c[1]), reverse=True)
 
     # Los N primeros cocientes ganan un escaño
-    ganadores = {(nombre, divisor) for _, nombre, divisor in todos[:escaños]}
+    ganadores = {(nombre, divisor) for _, _, nombre, divisor in todos[:escaños]}
 
     escaños_por_partido = {nombre: 0 for nombre, _ in partidos}
-    for _, nombre, _ in todos[:escaños]:
+    for _, _, nombre, _ in todos[:escaños]:
         escaños_por_partido[nombre] += 1
 
     filas = []
