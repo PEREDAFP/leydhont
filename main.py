@@ -39,7 +39,7 @@ def main() -> None:
         try:
             print("--- Datos de la Circunscripción ---")
             escaños = leer_entero("Número de escaños a repartir: ", permitir_cero=False)
-            votos_totales = leer_entero("Total de votos emitidos: ")
+            votos_totales = leer_entero("Votos emitidos a partidos: ")
             votos_blanco = leer_entero("Votos en blanco: ")
             num_partidos = leer_entero("Número de partidos: ", permitir_cero=True)
 
