@@ -1,0 +1,57 @@
+"""Pruebas unitarias de la lógica D'Hondt (stdlib unittest)."""
+
+import unittest
+
+from dhondt import calcular_umbral, filtrar_partidos, calcular_dhondt, validar_datos
+
+
+class TestUmbral(unittest.TestCase):
+    def test_umbral_tres_por_ciento(self):
+        self.assertEqual(calcular_umbral(100000), 3000.0)
+        self.assertEqual(calcular_umbral(100), 3.0)
+
+
+class TestFiltrado(unittest.TestCase):
+    def test_excluye_por_debajo_del_umbral(self):
+        partidos = [("A", 42000), ("B", 31000), ("C", 22500), ("D", 2500)]
+        self.assertEqual(
+            filtrar_partidos(partidos, 3000),
+            [("A", 42000), ("B", 31000), ("C", 22500)],
+        )
+
+    def test_incluye_igual_al_umbral(self):
+        self.assertEqual(filtrar_partidos([("X", 3000)], 3000), [("X", 3000)])
+
+
+class TestDhondt(unittest.TestCase):
+    def test_ejemplo_readme(self):
+        escaños = 5
+        partidos = [("Partido A", 42000), ("Partido B", 31000), ("Partido C", 22500)]
+        resultado = calcular_dhondt(escaños, partidos)
+        self.assertEqual(
+            resultado, {"Partido A": 2, "Partido B": 2, "Partido C": 1}
+        )
+
+    def test_suma_escaños_igual_a_n(self):
+        escaños = 7
+        partidos = [("A", 10000), ("B", 8000), ("C", 5000)]
+        resultado = calcular_dhondt(escaños, partidos)
+        self.assertEqual(sum(resultado.values()), escaños)
+
+
+class TestValidaciones(unittest.TestCase):
+    def test_escaños_cero_invalido(self):
+        with self.assertRaises(ValueError):
+            validar_datos(0, 100000, 0, [("A", 50000)])
+
+    def test_negativos_invalidos(self):
+        with self.assertRaises(ValueError):
+            validar_datos(5, 100000, 0, [("A", -100)])
+
+    def test_suma_excede_total(self):
+        with self.assertRaises(ValueError):
+            validar_datos(5, 100000, 0, [("A", 60000), ("B", 50000)])
+
+
+if __name__ == "__main__":
+    unittest.main()

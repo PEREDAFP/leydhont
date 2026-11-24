@@ -2,9 +2,11 @@
 
 Calculadora Electoral — Método D'Hondt. CLI en Python puro, sin dependencias externas.
 
-## Hechos verificables del repositorio
-- Solo hay dos archivos versionados: `.gitignore` y `README.md`.
-- `main.py`, `dhondt.py` y `tests/` (descritos en el README) **no existen** en el árbol de trabajo ni en la rama `main`. Si se pide implementar, créelos dentro de esta carpeta.
+## Estructura del proyecto (esta carpeta)
+- `main.py` — punto de entrada y captura de datos por consola.
+- `dhondt.py` — lógica de filtrado (umbral 3 %) y cálculo D'Hondt (stdlib puro).
+- `tests/test_dhondt.py` — pruebas unitarias con `unittest` (stdlib).
+- `.gitignore` y `README.md` son los únicos archivos de configuración/docs.
 - No hay CI, GitHub Actions, pre-commit, `opencode.json`, `requirements.txt`, lockfiles, linter ni typechecker configurados.
 
 ## Stack y requisitos
