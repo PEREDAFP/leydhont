@@ -64,3 +64,38 @@ def calcular_dhondt(escaños: int, partidos: List[Partido]) -> Dict[str, int]:
     for _, nombre in cocientes[:escaños]:
         resultado[nombre] += 1
     return resultado
+
+
+def calcular_tabla_divisiones(escaños: int, partidos: List[Partido]):
+    """Calcula la tabla de divisiones D'Hondt para mostrar por pantalla.
+
+    Devuelve una lista de filas. Cada fila es una tupla:
+        (nombre, votos, celdas, escaños_asignados)
+    donde ``celdas`` es una lista de tuplas (divisor, cociente, gano) para
+    divisor de 1 a escaños. ``gano`` es True si ese cociente es uno de los
+    N cocientes más altos que se reparten un escaño.
+    """
+    todos = []
+    for nombre, votos in partidos:
+        for divisor in range(1, escaños + 1):
+            todos.append((votos / divisor, nombre, divisor))
+
+    # Orden estable descendente por cociente (empates conservan orden de inserción)
+    todos.sort(key=lambda c: -c[0])
+
+    # Los N primeros cocientes ganan un escaño
+    ganadores = {(nombre, divisor) for _, nombre, divisor in todos[:escaños]}
+
+    escaños_por_partido = {nombre: 0 for nombre, _ in partidos}
+    for _, nombre, _ in todos[:escaños]:
+        escaños_por_partido[nombre] += 1
+
+    filas = []
+    for nombre, votos in partidos:
+        celdas = []
+        for divisor in range(1, escaños + 1):
+            cociente = votos / divisor
+            gano = (nombre, divisor) in ganadores
+            celdas.append((divisor, cociente, gano))
+        filas.append((nombre, votos, celdas, escaños_por_partido[nombre]))
+    return filas

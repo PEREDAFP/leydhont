@@ -5,8 +5,16 @@ Captura los datos por consola y muestra el reparto de escaños.
 
 import os
 import sys
+from typing import List
 
-from dhondt import calcular_umbral, filtrar_partidos, calcular_dhondt, validar_datos
+from dhondt import Partido
+from dhondt import (
+    calcular_umbral,
+    filtrar_partidos,
+    calcular_dhondt,
+    calcular_tabla_divisiones,
+    validar_datos,
+)
 
 
 def limpiar_pantalla() -> None:
@@ -31,6 +39,42 @@ def leer_entero(mensaje: str, permitir_cero: bool = True) -> int:
             print("No se admiten valores negativos ni cero.")
             continue
         return valor
+
+
+def imprimir_tabla_divisiones(escaños: int, partidos: List[Partido]) -> None:
+    """Muestra la tabla de divisiones D'Hondt (estilo Wikipedia).
+
+    Las celdas ganadoras (cociente entre los N más altos) aparecen en verde.
+    """
+    filas = calcular_tabla_divisiones(escaños, partidos)
+
+    # Ancho de cada columna de división
+    col_div = escaños * 7 + 4  # suficiente para " /1   /2   ...   /N   "
+    col_nombre = max(len(nombre) for nombre, _, _, _ in filas)
+    col_votos = max(len(str(votos)) for _, votos, _, _ in filas)
+    col_escanos = len("Escaños")
+
+    cabecera = f"{'Partido':<{col_nombre}}  {'Votos':>{col_votos}}"
+    for d in range(1, escaños + 1):
+        cabecera += f"  /{d:<3}"
+    cabecera += f"  {'Escaños':>{col_escanos}}"
+    separador = "-" * len(cabecera)
+
+    print("\n--- Tabla de divisiones ---")
+    print(cabecera)
+    print(separador)
+    for nombre, votos, celdas, escaños_asignados in filas:
+        linea = f"{nombre:<{col_nombre}}  {votos:>{col_votos}}"
+        for divisor, cociente, gano in celdas:
+            valor = f"{cociente:.0f}"
+            if gano:
+                valor += "*"
+            if _COLOR_PROMPT and gano:
+                valor = f"{_COLOR_PROMPT}{valor}{_COLOR_RESET}"
+            linea += f"  {valor:<4}"
+        linea += f"  {escaños_asignados:>{col_escanos}}"
+        print(linea)
+    print(separador)
 
 
 def main() -> None:
@@ -75,6 +119,8 @@ def main() -> None:
     for nombre, _ in partidos_filtrados:
         escaños_partido = resultado[nombre]
         print(f"- {nombre}: {escaños_partido} escaño{'s' if escaños_partido != 1 else ''}")
+
+    imprimir_tabla_divisiones(escaños, partidos_filtrados)
 
 
 if __name__ == "__main__":
